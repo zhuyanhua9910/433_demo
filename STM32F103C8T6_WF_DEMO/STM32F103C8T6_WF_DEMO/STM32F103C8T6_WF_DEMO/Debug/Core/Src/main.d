@@ -25,7 +25,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../Core/Inc/spi.h ../Core/Inc/main.h ../Core/Inc/usart.h \
  ../Core/Inc/gpio.h \
- C:/Users/19344/Desktop/STM32F103C8T6_WF_DEMO—交付终版/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/wf4463_app.h
+ C:/Users/19344/Desktop/433/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/wf4463_app.h \
+ C:/Users/19344/Desktop/433/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/radio_config_directrx.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -55,4 +56,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/main.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-C:/Users/19344/Desktop/STM32F103C8T6_WF_DEMO—交付终版/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/wf4463_app.h:
+C:/Users/19344/Desktop/433/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/wf4463_app.h:
+C:/Users/19344/Desktop/433/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/STM32F103C8T6_WF_DEMO/Core/Wf4464/Inc/radio_config_directrx.h:

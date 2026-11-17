@@ -140,6 +140,14 @@ int16_t wf4463_rssi_dbm(void);
  */
 int8_t wf4463_reset(void);
 
+/**
+ * @brief  启动 Direct RX 观测模式（示波器调试用）
+ * @note   加载 433.920MHz / 2kbps / 2FSK 直收配置，解调基带从芯片 GPIO0 输出，
+ *         对应模块（E10-433MD-SMA）第 11 脚。GPIO2/GPIO3 仍保持 RF 开关控制。
+ *         包处理已关闭，本模式下收不到数据包，只用于观测基带波形。
+ */
+int8_t wf4463_direct_rx_scope_start(void);
+
 #ifdef __cplusplus
 }
 #endif

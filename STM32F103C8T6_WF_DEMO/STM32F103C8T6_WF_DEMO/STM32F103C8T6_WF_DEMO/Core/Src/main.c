@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "wf4463_app.h"
+#include "radio_config_directrx.h"   /* 仅为打印实际直收频点，与实际加载的配置保持一致 */
 
 /* USER CODE END Includes */
 
@@ -44,6 +45,17 @@
 
 #define APP_PACKET_LEN    7         /* 固定 7 字节，与参考 demo 一致："WF00001" */
 #define APP_CHANNEL       0
+
+/* ============================================================
+ * 示波器调试模式（Direct RX）
+ *   1 = 编译成「直收观测」固件：
+ *       433MHz / 2 kbps / 2FSK / ±20kHz，
+ *       解调基带从模块 GPIO0（E10-433MD-SMA 第 11 脚）输出，
+ *       包处理关闭，MCU 不参与收发，只用于示波器看波形。
+ *   0 = 正常收发固件（TX/RX 由 CHOOSE_MODE 引脚决定）。
+ * 抓完波形改回 0 重新编译即可恢复收发功能。
+ * ============================================================ */
+#define DIRECT_RX_SCOPE   1
 
 /* USER CODE END PD */
 
@@ -109,6 +121,51 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+#if DIRECT_RX_SCOPE
+  /* ================= 示波器调试模式：Direct RX =================
+   * 加载 433MHz / 2kbps 直收配置，基带从模块 GPIO0（第 11 脚）输出。
+   * MCU 不参与收发，包处理已关闭，只用于观测解调波形。
+   * ============================================================ */
+  {
+      int8_t src = wf4463_direct_rx_scope_start();
+
+      printf("\r\n===== DIRECT RX SCOPE MODE =====\r\n");
+      printf("direct_rx rc=%d\r\n", src);
+
+      if (src == WF4463_OK)
+      {
+          uint8_t st = 0;
+          wf4463_print_info();
+          (void)wf4463_device_state(&st);
+          printf("state=%u (8=RX ok)\r\n", (unsigned)st);
+          /* 频点跟着 DIRECT_RX_FREQ_433_920 走，避免横幅和实际配置不一致看错 */
+#if DIRECT_RX_FREQ_433_920
+          printf("433.920MHz / 2kbps / 2FSK / Fdev 20kHz\r\n");
+#else
+          printf("433.000MHz / 2kbps / 2FSK / Fdev 20kHz  (same as demo)\r\n");
+#endif
+          printf("probe: module pin 11 (GPIO0) / pin 10 (GPIO1)  500us per bit  5ms/div\r\n");
+      }
+      else
+      {
+          printf("FAIL: check SPI wiring / power\r\n");
+      }
+
+      /* 本模式无需 MCU 参与，停在此处让芯片持续 RX 并输出基带。
+       * 每秒打印一次 state / RSSI —— 用来一刀切开两种故障：
+       *   state != 8        -> 芯片根本没进 RX，先查 SPI/复位，不用探针
+       *   RSSI 一直 -120    -> 射频没进来（频率偏、电平低、开关没打开）
+       *   state=8 且 RSSI 抬起 -> 射频已解调，问题只在 GPIO 输出脚 */
+      while (1)
+      {
+          uint8_t hbState = 0;
+          wf4463_device_state(&hbState);
+          printf("HB state=%u rssi=%d dBm\r\n",
+                 (unsigned)hbState, (int)wf4463_rssi_dbm());
+          HAL_Delay(1000);
+      }
+  }
+#else
   /* ---- 角色选择：CHOOSE_MODE 高 = 发送，低 = 接收 ----
    * CHOOSE_MODE 已在 MX_GPIO_Init() 中配置为输入 + 上拉，这里只需读取 */
   gRole = Role_Detect();
@@ -144,6 +201,7 @@ int main(void)
       rc = wf4463_rx_start(APP_CHANNEL);
       printf("rx_start rc=%d\r\n", rc);
   }
+#endif /* DIRECT_RX_SCOPE */
 
   /* USER CODE END 2 */
 
@@ -295,7 +353,8 @@ void SystemClock_Config(void)
  * 这里只做电平判读，不再重复初始化 */
 
 /* 高电平 → ROLE_TX；低电平 → ROLE_RX */
-static uint8_t Role_Detect(void)
+/* DIRECT_RX_SCOPE=1 时本函数不会被调用，加 unused 避免编译告警 */
+__attribute__((unused)) static uint8_t Role_Detect(void)
 {
     if (HAL_GPIO_ReadPin(CHOOSE_MODE_GPIO_Port, CHOOSE_MODE_Pin) == GPIO_PIN_SET)
     {

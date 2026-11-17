@@ -15,10 +15,14 @@
 #include "wf446x_api_lib.h"
 #include "wf446x_defs.h"
 #include "radio_config.h"        /* WDS 生成的射频配置 */
+#include "radio_config_directrx.h"  /* Direct RX（示波器观测）配置 */
 
 /* WDS 生成的配置数组（严格按 wf446x_configuration_init() 的格式：
    LEN | 数据…… ，最后以 0x00 结尾）。第一条就是 POWER_UP。 */
 static const U8 Radio_Configuration[] = RADIO_CONFIGURATION_DATA_ARRAY;
+
+/* Direct RX 直收配置（433.920MHz / 2kbps / GPIO0 输出基带），仅在示波器调试模式下加载 */
+static const U8 DirectRx_Configuration[] = DIRECT_RX_CONFIGURATION_DATA_ARRAY;
 
 /* 最近一次读到（并已清除）的中断挂起位 */
 static U8 s_ph_pend;
@@ -109,6 +113,35 @@ int8_t wf4463_init(void)
 int8_t wf4463_reset(void)
 {
     return wf4463_init();
+}
+
+/* ------------------------------------------------------------------ */
+/* Direct RX 观测模式（示波器调试）                                     */
+/*                                                                     */
+/* 加载 433.920MHz / 2kbps / 2FSK(±20kHz, h=20) 的直收配置：            */
+/*   MODEM_MOD_TYPE     = 0x0A  (2FSK + 直接模式)                      */
+/*   PKT_CONFIG1        = 0x40  (关闭包处理，裸基带输出)                */
+/*   MODEM_RAW_CONTROL  = 0x8F  (raw 直通)                             */
+/*   GPIO_PIN_CFG       = GPIO0:0x43(RX_DATA) / GPIO2:0x60 / GPIO3:0x61 */
+/* 解调后的基带从芯片 GPIO0 输出，对应 E10-433MD-SMA 模块第 11 脚。      */
+/* 注意：包处理已关闭，此模式下 MCU 收不到任何数据包，仅用于观测波形。   */
+/* ------------------------------------------------------------------ */
+int8_t wf4463_direct_rx_scope_start(void)
+{
+    wf4463_hw_reset();
+
+    if (wf446x_configuration_init(DirectRx_Configuration) != WF446X_SUCCESS)
+    {
+        return WF4463_ERR_CONFIG;
+    }
+
+    wf4463_irq_read_clear();
+
+    /* RX_LEN=0：按包处理器配置（此处已关闭）；
+       NEXT_STATE3 = 8 (RX)：超时后继续留在 RX，持续输出基带 */
+    wf446x_start_rx(0u, 0u, 0u, 0u, 8u, 8u);
+
+    return WF4463_OK;
 }
 
 /* ------------------------------------------------------------------ */

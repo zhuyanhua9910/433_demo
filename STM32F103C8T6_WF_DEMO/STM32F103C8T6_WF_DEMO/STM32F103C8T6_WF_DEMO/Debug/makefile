@@ -61,8 +61,8 @@ all: main-build
 main-build: STM32F103C8T6_WF_DEMO.elf secondary-outputs
 
 # Tool invocations
-STM32F103C8T6_WF_DEMO.elf STM32F103C8T6_WF_DEMO.map: $(OBJS) $(USER_OBJS) C:\Users\19344\Desktop\STM32F103C8T6_WF_DEMO—交付终版\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32F103C8T6_WF_DEMO.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\19344\Desktop\STM32F103C8T6_WF_DEMO—交付终版\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F103C8T6_WF_DEMO.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM32F103C8T6_WF_DEMO.elf STM32F103C8T6_WF_DEMO.map: $(OBJS) $(USER_OBJS) C:\Users\19344\Desktop\433\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32F103C8T6_WF_DEMO.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\19344\Desktop\433\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8T6_WF_DEMO\STM32F103C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32F103C8T6_WF_DEMO.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
