@@ -1,0 +1,10 @@
+../Core/Wf4464/Src/radio_hal.c:17:6:radio_hal_ClearNsel	8	static
+../Core/Wf4464/Src/radio_hal.c:22:6:radio_hal_SetNsel	8	static
+../Core/Wf4464/Src/radio_hal.c:30:6:radio_hal_AssertShutdown	8	static
+../Core/Wf4464/Src/radio_hal.c:35:6:radio_hal_DeassertShutdown	8	static
+../Core/Wf4464/Src/radio_hal.c:44:5:radio_hal_NirqLevel	8	static
+../Core/Wf4464/Src/radio_hal.c:56:4:SPI_RW	32	static
+../Core/Wf4464/Src/radio_hal.c:68:6:radio_hal_SpiWriteByte	16	static
+../Core/Wf4464/Src/radio_hal.c:73:4:radio_hal_SpiReadByte	8	static
+../Core/Wf4464/Src/radio_hal.c:79:6:radio_hal_SpiWriteData	16	static
+../Core/Wf4464/Src/radio_hal.c:90:6:radio_hal_SpiReadData	16	static

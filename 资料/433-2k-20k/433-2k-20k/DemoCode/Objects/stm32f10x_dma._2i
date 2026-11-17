@@ -1,0 +1,8 @@
+--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Demo_Qx4463 -I .\hardware
+-I.\RTE\Device\STM32F103RC
+-I.\RTE\_Target_1
+-ID:\Keil_v5\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+-ID:\Keil_v5\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include
+-ID:\Keil_v5\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\inc
+-D__UVISION_VERSION="535" -D_RTE_ -DSTM32F10X_HD -D_RTE_
+-o .\objects\stm32f10x_dma.o --omf_browse .\objects\stm32f10x_dma.crf --depend .\objects\stm32f10x_dma.d --feedback ".\Objects\test.fed" "D:\Keil_v5\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\StdPeriph_Driver\src\stm32f10x_dma.c"

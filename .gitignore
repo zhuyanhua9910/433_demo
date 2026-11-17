@@ -1,0 +1,8 @@
+# macOS / Windows 系统产生的临时文件
+__MACOSX/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# WorkBuddy 本地会话数据
+.workbuddy/

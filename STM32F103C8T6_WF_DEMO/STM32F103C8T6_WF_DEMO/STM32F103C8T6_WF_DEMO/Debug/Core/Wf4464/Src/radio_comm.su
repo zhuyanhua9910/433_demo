@@ -1,0 +1,7 @@
+../Core/Wf4464/Src/radio_comm.c:49:4:radio_comm_GetResp	24	static
+../Core/Wf4464/Src/radio_comm.c:100:6:radio_comm_SendCmd	16	static
+../Core/Wf4464/Src/radio_comm.c:125:6:radio_comm_ReadData	16	static
+../Core/Wf4464/Src/radio_comm.c:150:6:radio_comm_WriteData	16	static
+../Core/Wf4464/Src/radio_comm.c:171:4:radio_comm_PollCTS	8	static
+../Core/Wf4464/Src/radio_comm.c:179:6:radio_comm_ClearCTS	4	static
+../Core/Wf4464/Src/radio_comm.c:195:4:radio_comm_SendCmdGetResp	24	static

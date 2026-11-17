@@ -1,0 +1,16 @@
+../Core/Wf4464/Src/wf4463_app.c:33:13:wf4463_irq_read_clear	1
+../Core/Wf4464/Src/wf4463_app.c:45:13:wf4463_wait_irq	4
+../Core/Wf4464/Src/wf4463_app.c:77:13:wf4463_hw_reset	1
+../Core/Wf4464/Src/wf4463_app.c:93:8:wf4463_init	2
+../Core/Wf4464/Src/wf4463_app.c:109:8:wf4463_reset	1
+../Core/Wf4464/Src/wf4463_app.c:121:17:wf4463_join16	1
+../Core/Wf4464/Src/wf4463_app.c:126:8:wf4463_read_info	2
+../Core/Wf4464/Src/wf4463_app.c:145:8:wf4463_part_info	4
+../Core/Wf4464/Src/wf4463_app.c:167:8:wf4463_print_info	3
+../Core/Wf4464/Src/wf4463_app.c:190:6:wf4463_irq_asserted	1
+../Core/Wf4464/Src/wf4463_app.c:195:8:wf4463_device_state	2
+../Core/Wf4464/Src/wf4463_app.c:208:8:wf4463_diag	2
+../Core/Wf4464/Src/wf4463_app.c:246:8:wf4463_tx	7
+../Core/Wf4464/Src/wf4463_app.c:316:8:wf4463_rx_start	1
+../Core/Wf4464/Src/wf4463_app.c:340:9:wf4463_rx_fetch	12
+../Core/Wf4464/Src/wf4463_app.c:415:9:wf4463_rssi_dbm	1
