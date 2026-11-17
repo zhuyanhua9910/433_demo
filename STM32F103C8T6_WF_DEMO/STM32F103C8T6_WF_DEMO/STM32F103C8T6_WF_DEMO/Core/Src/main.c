@@ -42,7 +42,7 @@
 #define ROLE_TX           1
 #define ROLE_RX           2
 
-#define APP_PACKET_LEN    12        /* "WF HELLO 001" = 12 字节 */
+#define APP_PACKET_LEN    7         /* 固定 7 字节，与参考 demo 一致："WF00001" */
 #define APP_CHANNEL       0
 
 /* USER CODE END PD */
@@ -164,9 +164,9 @@ int main(void)
             txSeq++;
             if (txSeq > 999) { txSeq = 1; }   /* 序号循环 001~999，保证包长固定 */
 
-            /* 负载：WF HELLO 001 / 002 / 003 ... */
+            /* 负载：WF00001 / WF00002 / ... 固定 7 字节（与参考 demo 的固定包长对齐） */
             memset(txBuf, 0, sizeof(txBuf));
-            snprintf((char *)txBuf, sizeof(txBuf), "WF HELLO %03u", (unsigned)txSeq);
+            snprintf((char *)txBuf, sizeof(txBuf), "WF%05u", (unsigned)txSeq);
 
             printf("TX #%u > %s\r\n", txSeq, (char *)txBuf);
 

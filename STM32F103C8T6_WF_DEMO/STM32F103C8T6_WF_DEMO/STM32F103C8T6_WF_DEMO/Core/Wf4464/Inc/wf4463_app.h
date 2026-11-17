@@ -109,8 +109,8 @@ int8_t wf4463_device_state(uint8_t *state);
  * @brief  发送一包（阻塞，直到发完或超时）
  * @param  channel 信道号（WDS 里配的频率表序号，单频应用填 0）
  * @param  data    载荷
- * @param  len     载荷长度（1 ~ WF4463_MAX_PAYLOAD）
- * @note   FIFO 会自动加上"长度字节"（本工程配置为变长包）。
+ * @param  len     载荷长度（1 ~ 7；固定包长，不足 7 字节会自动补 0x00）
+ * @note   固定包长模式：FIFO 里只放纯载荷，没有长度字节；不足 7 字节尾部补 0x00。
  */
 int8_t wf4463_tx(uint8_t channel, const uint8_t *data, uint8_t len);
 

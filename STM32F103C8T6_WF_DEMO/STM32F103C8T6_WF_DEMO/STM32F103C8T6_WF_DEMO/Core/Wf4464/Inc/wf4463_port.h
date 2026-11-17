@@ -40,7 +40,7 @@ extern SPI_HandleTypeDef hspi2;
                                          * 先把稳定时间给足，再看是否还复发。 */
 
 /* ===== 5. 应用层参数 ===== */
-#define WF4463_MAX_PAYLOAD        63u   /* FIFO 64 字节，变长包首字节占 1 */
+#define WF4463_MAX_PAYLOAD        63u   /* FIFO 64 字节；当前为固定 7 字节包，此值仅作缓冲上限 */
 #define WF4463_TX_TIMEOUT_MS      1000u /* 等 TX 完成中断 */
 #define WF4463_RX_TIMEOUT_MS      0u    /* 0 = 一直等 */
 #define WF4463_TX_DONE_STATE      0x30u /* 发完回 READY；0x00 = 保持 TX */

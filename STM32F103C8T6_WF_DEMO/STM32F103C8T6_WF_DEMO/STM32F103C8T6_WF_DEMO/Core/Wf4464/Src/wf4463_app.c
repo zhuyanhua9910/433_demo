@@ -243,12 +243,16 @@ int8_t wf4463_diag(wf4463_diag_t *d)
 /* ------------------------------------------------------------------ */
 /* 发送                                                              */
 /* ------------------------------------------------------------------ */
+/* 固定包长（与参考 demo 对齐）：取自 radio_config.h 的 RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH，
+   该值与 PKT_FIELD_1_LENGTH 必须一致，改配置时自动跟随。 */
+#define WF4463_FIXED_PKT_LEN   ((uint8_t)RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH)
+
 int8_t wf4463_tx(uint8_t channel, const uint8_t *data, uint8_t len)
 {
-    U8 frame[WF4463_MAX_PAYLOAD + 1u];
+    U8 frame[WF4463_FIXED_PKT_LEN];
     uint32_t t0;
 
-    if ((data == NULL) || (len == 0u) || (len > WF4463_MAX_PAYLOAD))
+    if ((data == NULL) || (len == 0u) || (len > WF4463_FIXED_PKT_LEN))
     {
         return WF4463_ERR_PARAM;
     }
@@ -264,18 +268,13 @@ int8_t wf4463_tx(uint8_t channel, const uint8_t *data, uint8_t len)
     wf446x_fifo_info(0x03u);
     wf4463_irq_read_clear();
 
-    /* 3) 装包：本工程 radio_config.h 是变长包，FIFO 首字节是长度。 */
-    frame[0] = len;
-    (void)memcpy(&frame[1], data, (size_t)len);
+    /* 3) 装包：固定包长模式，FIFO 里就是纯载荷，没有长度字节。
+       载荷不足 7 字节时尾部补 0x00 —— 芯片按 PKT_FIELD_1_LENGTH=7 取字节，
+       FIFO 里的字节少一个就会立即报 FIFO 下溢(-7)。 */
+    (void)memset(frame, 0, sizeof(frame));
+    (void)memcpy(frame, data, (size_t)len);
 
-    /* 变长包 TX 的关键一步：把本包长度写进 PKT_FIELD_2_LENGTH。
-       初始化时它是 0x1FFF（最大 8191），不改的话包处理器会一直从 FIFO 取字节，
-       取完即报 FIFO 下溢，也就是 -7。 */
-    wf446x_set_property(WF446X_PROP_GRP_ID_PKT, 2u,
-                        WF446X_PROP_GRP_INDEX_PKT_FIELD_2_LENGTH_12_8,
-                        (U8)((U16)len >> 8), (U8)len);
-
-    wf446x_write_tx_fifo((U8)(len + 1u), frame);
+    wf446x_write_tx_fifo(WF4463_FIXED_PKT_LEN, frame);
     wf446x_start_tx(channel, WF4463_TX_DONE_STATE, 0u);
 
     /* 4) 只等 PACKET_SENT 或 FIFO 错误。
@@ -315,11 +314,8 @@ int8_t wf4463_tx(uint8_t channel, const uint8_t *data, uint8_t len)
 /* ------------------------------------------------------------------ */
 int8_t wf4463_rx_start(uint8_t channel)
 {
-    /* 发包时 PKT_FIELD_2_LENGTH 被改成了实际长度，接收前必须恢复成
-       变长包的最大值 0x1FFF，否则收长包会被截断。 */
-    wf446x_set_property(WF446X_PROP_GRP_ID_PKT, 2,
-                        WF446X_PROP_GRP_INDEX_PKT_FIELD_2_LENGTH_12_8,
-                        0x1Fu, 0xFFu);
+    /* 固定包长模式下不再需要恢复 PKT_FIELD_2_LENGTH
+       （变长包时代每次发包都会把它改成实际长度，收包前要还原成 0x1FFF）。 */
 
     /* TX -> RX 必须先回 READY（不可直接切换）。
        发射超时(-3)时芯片可能还停在 TX，此时直接 START_RX 会被忽略，
@@ -329,7 +325,7 @@ int8_t wf4463_rx_start(uint8_t channel)
     (void)radio_comm_PollCTS();
 
     /* 清掉 RX FIFO 里的残留字节（0x02 = RX FIFO reset）。
-       不清的话下一次收包的长度字节可能是上一包的残留，长度全乱。 */
+       不清的话上一包的残留会拼进这一包，导致长度/内容错位。 */
     wf446x_fifo_info(0x02);
 
     /* RX_LEN = 0：按包处理器配置来 */
@@ -400,8 +396,8 @@ int16_t wf4463_rx_fetch(uint8_t *buf, uint8_t max_len, uint8_t *out_len,
 
     wf446x_read_rx_fifo(count, tmp);
 
-    /* 变长包模式下，长度字节由包处理器解析，不会出现在 RX FIFO 里，
-       因此 FIFO 中的 count 个字节就是纯负载，从 tmp[0] 开始拷贝 */
+    /* 固定包长模式下，FIFO 中的 count 个字节就是纯载荷（无长度字节），
+       正常情况下 count 恒为 7；拷贝逻辑与变长模式相同 */
     n = (count > max_len) ? max_len : count;
     (void)memcpy(buf, tmp, (size_t)n);
     *out_len = n;

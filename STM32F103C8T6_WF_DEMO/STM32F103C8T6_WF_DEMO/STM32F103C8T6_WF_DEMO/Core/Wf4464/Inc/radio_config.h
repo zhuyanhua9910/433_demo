@@ -21,7 +21,7 @@
 /*
 // Crys_freq(Hz): 30000000    Crys_tol(ppm): 20    IF_mode: 2    High_perf_Ch_Fil: 1    OSRtune: 0    Ch_Fil_Bw_AFC: 0    ANT_DIV: 0    PM_pattern: 0    
 // MOD_type: 2    Rsymb(sps): 10000    Fdev(Hz): 20000    RXBW(Hz): 150000    Manchester: 0    AFC_en: 0    Rsymb_error: 0.0    Chip-Version: 2    
-// RF Freq.(MHz): 433    API_TC: 29    fhst: 250000    inputBW: 0    BERT: 0    RAW_dout: 0    D_source: 0    Hi_pfm_div: 1    
+// RF Freq.(MHz): 433.92 (原 433，已与参考 demo 对齐)    API_TC: 29    fhst: 250000    inputBW: 0    BERT: 0    RAW_dout: 0    D_source: 0    Hi_pfm_div: 1    
 // 
 // # RX IF frequency is  -468750 Hz
 // # WB filter 4 (BW =  82.64 kHz);  NB-filter 4 (BW = 82.64 kHz)
@@ -169,7 +169,13 @@
 //   PKT_WHT_BIT_NUM - Selects which bit of the LFSR (used to generate the PN / data whitening sequence) is used as the output bit for data scrambling.
 //   PKT_CONFIG1 - General configuration bits for transmission or reception of a packet.
 */
-#define RF_PKT_CRC_CONFIG_7 0x11, 0x12, 0x07, 0x00, 0x84, 0x00, 0x30, 0xFF, 0xFF, 0x00, 0x02
+#define RF_PKT_CRC_CONFIG_7 0x11, 0x12, 0x07, 0x00, 0x04, 0x01, 0x08, 0xFF, 0xFF, 0x20, 0x02
+/* [与参考 demo 对齐] PKT_CRC_CONFIG 由 0x84 改为 0x04。
+   两者 CRC_POLYNOMIAL[3:0] 都是 4 = CRC-16 (IBM, 0x8005)，差别只在 bit7，
+   参考 demo（WDS 3.2.11）生成的是 0x04，这里跟它保持一致。
+   白化参数一并改为 demo 的值（标准 PN9：POLY=0x0108、SEED=0xFFFF、BIT_NUM=0x20）：
+   本工程 PKT_CONFIG1 与 demo 同为 0x02，若白化被启用，两端多项式不同就会收成乱码，
+   对齐后无论开没开都一致。 */
 
 /*
 // Set properties:           RF_PKT_LEN_12
@@ -191,7 +197,18 @@
 //   PKT_FIELD_2_LENGTH_7_0 - Unsigned 13-bit Field 2 length value.
 //   PKT_FIELD_2_CONFIG - General data processing and packet configuration bits for Field 2.
 */
-#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x22, 0x01, 0x00, 0x30, 0x30, 0x00, 0x01, 0x04, 0x80, 0x1F, 0xFF, 0x00
+#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x00, 0x00, 0x00, 0x30, 0x30, 0x00, 0x07, 0x04, 0xAA, 0x00, 0x00, 0x00
+/* [与参考 demo 对齐] 包结构由"1 字节长度头 + 变长载荷"改为"固定 7 字节载荷"：
+     PKT_LEN              = 0x00  不解析长度字段
+     PKT_LEN_FIELD_SOURCE = 0x00  无长度字段来源
+     PKT_LEN_ADJUST       = 0x00
+     PKT_TX/RX_THRESHOLD  = 0x30  不变
+     PKT_FIELD_1_LENGTH   = 0x0007  固定 7 字节（原 0x0001 长度头）
+     PKT_FIELD_1_CONFIG   = 0x04   不变
+     PKT_FIELD_1_CRC_CONFIG = 0xAA 与 demo 一致（原 0x80）
+     PKT_FIELD_2_LENGTH   = 0x0000  变长字段停用（原 0x1FFF）
+     PKT_FIELD_2_CONFIG   = 0x00   不变
+   载荷长度若不足 7 字节，由 wf4463_tx() 补 0x00 到 7 字节。 */
 
 /*
 // Set properties:           RF_PKT_FIELD_2_CRC_CONFIG_12
@@ -560,7 +577,12 @@
 //   FREQ_CONTROL_W_SIZE - Set window gating period (in number of crystal reference clock cycles) for counting VCO frequency during calibration.
 //   FREQ_CONTROL_VCOCNT_RX_ADJ - Adjust target count for VCO calibration in RX mode.
 */
-#define RF_FREQ_CONTROL_INTE_8 0x11, 0x40, 0x08, 0x00, 0x38, 0x0D, 0xDD, 0xDD, 0x44, 0x44, 0x20, 0xFE
+#define RF_FREQ_CONTROL_INTE_8 0x11, 0x40, 0x08, 0x00, 0x38, 0x0E, 0xD9, 0x16, 0x44, 0x44, 0x20, 0xFE
+/* [与参考 demo 对齐] 载波由 433.000 MHz 改为 433.920 MHz：
+     INTE = 0x38，FRAC = 0x0ED916  ->  (56 + 973078/2^19) × 30MHz/4 = 433.9200 MHz
+   原值 FRAC = 0x0DDDDD 为 433.0000 MHz。
+   注意 GLOBAL_XO_TUNE 仍保留本板校准值 0x52，未跟随 demo 的 0x66
+   （该值由晶振负载电容决定，照抄会让本板频点偏掉）。 */
 
 
 // AUTOMATICALLY GENERATED CODE! 

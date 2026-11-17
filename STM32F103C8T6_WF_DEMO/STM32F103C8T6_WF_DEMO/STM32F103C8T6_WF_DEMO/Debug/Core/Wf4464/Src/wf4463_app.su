@@ -10,7 +10,7 @@
 ../Core/Wf4464/Src/wf4463_app.c:190:6:wf4463_irq_asserted	8	static
 ../Core/Wf4464/Src/wf4463_app.c:195:8:wf4463_device_state	16	static
 ../Core/Wf4464/Src/wf4463_app.c:208:8:wf4463_diag	24	static
-../Core/Wf4464/Src/wf4463_app.c:246:8:wf4463_tx	96	static
-../Core/Wf4464/Src/wf4463_app.c:316:8:wf4463_rx_start	24	static
-../Core/Wf4464/Src/wf4463_app.c:340:9:wf4463_rx_fetch	112	static
-../Core/Wf4464/Src/wf4463_app.c:415:9:wf4463_rssi_dbm	16	static
+../Core/Wf4464/Src/wf4463_app.c:250:8:wf4463_tx	32	static
+../Core/Wf4464/Src/wf4463_app.c:315:8:wf4463_rx_start	24	static
+../Core/Wf4464/Src/wf4463_app.c:336:9:wf4463_rx_fetch	112	static
+../Core/Wf4464/Src/wf4463_app.c:411:9:wf4463_rssi_dbm	16	static
