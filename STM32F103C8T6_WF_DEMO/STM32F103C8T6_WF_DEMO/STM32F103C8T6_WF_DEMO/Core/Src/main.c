@@ -50,7 +50,7 @@
  * 示波器调试模式（Direct RX）
  *   1 = 编译成「直收观测」固件：
  *       433MHz / 2 kbps / 2FSK / ±20kHz，
- *       解调基带从模块 GPIO0（E10-433MD-SMA 第 11 脚）输出，
+ *       解调基带从模块 GPIO1（E10-433MD-SMA 第 10 脚）输出，
  *       包处理关闭，MCU 不参与收发，只用于示波器看波形。
  *   0 = 正常收发固件（TX/RX 由 CHOOSE_MODE 引脚决定）。
  * 抓完波形改回 0 重新编译即可恢复收发功能。
@@ -144,7 +144,7 @@ int main(void)
 #else
           printf("433.000MHz / 2kbps / 2FSK / Fdev 20kHz  (same as demo)\r\n");
 #endif
-          printf("probe: module pin 11 (GPIO0) / pin 10 (GPIO1)  500us per bit  5ms/div\r\n");
+          printf("probe: module pin 10 (GPIO1 = RX_DATA)  500us per bit  5ms/div\r\n");
       }
       else
       {

@@ -111,16 +111,18 @@
 #define RF_DIRECTRX_POWER_UP    0x02, 0x01, 0x00, 0x01, 0xC9, 0xC3, 0x80
 
 /* GPIO（AN625 GPIOx_MODE[5:0]：2=恒定低 3=恒定高 17=RX数据CLK 20=RX数据 32=TX态 33=RX态）
- *   GPIO0 = 0x14 (mode 20) -> RX 解调基带输出（模块第 11 脚，示波器探这里）
- *   GPIO1 = 0x14 (mode 20) -> 同一个基带信号的第二份输出（模块第 10 脚），
- *                            纯粹为了"哪根好探就探哪根"，两根波形完全一样。
- *                            不想占用可改回 0x00（DO NOTHING）。
- *   GPIO2 = 0x60 (mode 32)  -> TX 状态，模块内部射频开关
- *   GPIO3 = 0x61 (mode 33)  -> RX 状态，模块内部射频开关
- * 注意：demo 里 0x43 是 0x40|3 = CMOS 输出恒定高（开关使能电平），不是 RX_DATA。
- *       demo 的 RX 数据实际在 GPIO2(0x54 = mode 20)；本模块 GPIO2/3 已改作开关，
- *       因此把数据挪到 GPIO0 / GPIO1。 */
-#define RF_DIRECTRX_GPIO_PIN_CFG 0x13, 0x14, 0x14, 0x60, 0x61, 0x00, 0x00, 0x00
+ *   GPIO0 = 0x43 (0x40|3, mode 3) -> 保持最初配置：CMOS 输出恒定高
+ *                                    （模块内部射频开关的使能电平，不输出数据）
+ *   GPIO1 = 0x14 (mode 20)        -> RX 解调基带输出，示波器探模块第 10 脚
+ *   GPIO2 = 0x60 (mode 32)        -> TX 状态，模块内部射频开关
+ *   GPIO3 = 0x61 (mode 33)        -> RX 状态，模块内部射频开关
+ *
+ * 历史：GPIO0 曾经被改成 0x14 输出数据（工程里"只有一条 3.3V 直线"的修复方案），
+ *       但若该模块的射频开关同时需要 GPIO0 拉高才通 RX，那样等于把接收通路关了。
+ *       现在把数据搬到 GPIO1、GPIO0 交还给开关，两条路互不干扰。
+ *       若确认 GPIO0 不需要恒定高（开关只由 GPIO2/3 控制），可用下面注释掉的那行让它悬空。 */
+#define RF_DIRECTRX_GPIO_PIN_CFG 0x13, 0x43, 0x14, 0x60, 0x61, 0x00, 0x00, 0x00
+//#define RF_DIRECTRX_GPIO_PIN_CFG 0x13, 0x00, 0x14, 0x60, 0x61, 0x00, 0x00, 0x00  // GPIO0 悬空（DO NOTHING）
 
 #define DIRECT_RX_CONFIGURATION_DATA_ARRAY { \
     0x07, RF_DIRECTRX_POWER_UP, \
